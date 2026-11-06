@@ -1,0 +1,183 @@
+{
+  "users": [
+    {
+      "id": "user-admin",
+      "username": "admin",
+      "passwordHash": "c42234fd62ed1c64af9c0b2d8dd826fe22d2a99a37b1dafc397796889aef6e2d",
+      "displayName": "System Administrator",
+      "role": "admin"
+    },
+    {
+      "id": "user-owner",
+      "username": "owner1",
+      "passwordHash": "eac53c50bb2dd9c92d368fc2f3297084f143ff25289e3dcdcf9f0a0bbb27dd8e",
+      "displayName": "Maya Owner",
+      "role": "owner"
+    },
+    {
+      "id": "user-viewer1",
+      "username": "viewer1",
+      "passwordHash": "d45870d5e2bbb7b899c84fc793a196855db990448565f80e80bd51b5a2fc95cb",
+      "displayName": "Noah Viewer",
+      "role": "viewer"
+    },
+    {
+      "id": "user-viewer2",
+      "username": "viewer2",
+      "passwordHash": "d45870d5e2bbb7b899c84fc793a196855db990448565f80e80bd51b5a2fc95cb",
+      "displayName": "Priya Viewer",
+      "role": "viewer"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-001",
+      "name": "Q4 Budget Summary.pdf",
+      "category": "Finance",
+      "ownerId": "user-owner",
+      "content": "Sensitive quarterly budget information for the board review only.\n\nRevenue target: 8.4M.\nCost save target: 1.2M.\nConfidential until signed off.",
+      "contentType": "application/pdf",
+      "size": 1230,
+      "createdAt": "2026-11-06T16:15:06.182Z",
+      "updatedAt": "2026-11-06T16:15:06.182Z",
+      "deleted": false,
+      "permissions": [
+        {
+          "userId": "user-owner",
+          "access": "edit"
+        },
+        {
+          "userId": "user-viewer1",
+          "access": "read"
+        }
+      ]
+    },
+    {
+      "id": "doc-002",
+      "name": "Customer Contract Draft.docx",
+      "category": "Legal",
+      "ownerId": "user-owner",
+      "content": "This document contains the draft customer contract terms and redlines. Access is restricted to the account owner and the legal team.",
+      "contentType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "size": 1850,
+      "createdAt": "2026-11-06T16:15:06.182Z",
+      "updatedAt": "2026-11-06T16:15:06.182Z",
+      "deleted": false,
+      "permissions": [
+        {
+          "userId": "user-owner",
+          "access": "edit"
+        }
+      ]
+    },
+    {
+      "id": "doc-1793981706227",
+      "name": "Board-Notes.txt",
+      "category": "Strategy",
+      "ownerId": "user-owner",
+      "content": "Quarterly board notes are confidential and shared on a need-to-know basis.",
+      "contentType": "text/plain",
+      "size": 90,
+      "createdAt": "2026-11-06T16:15:06.228Z",
+      "updatedAt": "2026-11-06T16:15:06.282Z",
+      "deleted": false,
+      "permissions": [
+        {
+          "userId": "user-owner",
+          "access": "edit"
+        }
+      ]
+    }
+  ],
+  "auditTrail": [
+    {
+      "id": "1a6fc7e2-759b-48b2-b3cc-f1475c90dc8f",
+      "sequence": 1,
+      "timestamp": "2026-11-06T16:15:06.196Z",
+      "previousHash": "GENESIS",
+      "type": "login",
+      "actorId": "user-owner",
+      "actorName": "Maya Owner",
+      "detail": "Maya Owner logged in successfully.",
+      "allowed": true,
+      "hash": "1ebc8d528ce78f04a4d41c6c4c4f88906795a481622808b334358f0ba91d8f38"
+    },
+    {
+      "id": "730cef50-ccc1-4896-93e2-ade5f9facf01",
+      "sequence": 2,
+      "timestamp": "2026-11-06T16:15:06.217Z",
+      "previousHash": "1ebc8d528ce78f04a4d41c6c4c4f88906795a481622808b334358f0ba91d8f38",
+      "type": "login",
+      "actorId": "user-viewer1",
+      "actorName": "Noah Viewer",
+      "detail": "Noah Viewer logged in successfully.",
+      "allowed": true,
+      "hash": "78e127fe8fe075df48312e9db01ba7aa65c1fa434a30a90930dd631c1db0b315"
+    },
+    {
+      "id": "7f4f721f-2af8-4b1c-9aa4-ac6a1905558e",
+      "sequence": 3,
+      "timestamp": "2026-11-06T16:15:06.230Z",
+      "previousHash": "78e127fe8fe075df48312e9db01ba7aa65c1fa434a30a90930dd631c1db0b315",
+      "type": "upload",
+      "actorId": "user-owner",
+      "actorName": "Maya Owner",
+      "documentId": "doc-1793981706227",
+      "detail": "Uploaded document Board-Notes.txt.",
+      "allowed": true,
+      "hash": "eef3ef6eac2a4b6557a8fd20e7ad12111ddc993c69de6f9f6c5ad121576e1c43"
+    },
+    {
+      "id": "e5f27c41-4649-4af7-9ada-30ad9b0700e3",
+      "sequence": 4,
+      "timestamp": "2026-11-06T16:15:06.246Z",
+      "previousHash": "eef3ef6eac2a4b6557a8fd20e7ad12111ddc993c69de6f9f6c5ad121576e1c43",
+      "type": "permission_change",
+      "actorId": "user-owner",
+      "actorName": "Maya Owner",
+      "documentId": "doc-1793981706227",
+      "detail": "Maya Owner set viewer1 to read access.",
+      "allowed": true,
+      "hash": "6af40ed893fe7f5fc364d75705733d91252e7f82142ba20757c10eb7392f9eeb"
+    },
+    {
+      "id": "d5d4d626-eaf2-49d8-935f-63a88130c23f",
+      "sequence": 5,
+      "timestamp": "2026-11-06T16:15:06.267Z",
+      "previousHash": "6af40ed893fe7f5fc364d75705733d91252e7f82142ba20757c10eb7392f9eeb",
+      "type": "view",
+      "actorId": "user-viewer1",
+      "actorName": "Noah Viewer",
+      "documentId": "doc-1793981706227",
+      "detail": "Noah Viewer viewed document Board-Notes.txt.",
+      "allowed": true,
+      "hash": "2149d5ca5ac36ea8fa1e4a17d97d36a31f5d78be626fbb416bcd3efbb9cdd4a3"
+    },
+    {
+      "id": "07ff7cf1-a3db-4e4c-b383-be554cfc6ca7",
+      "sequence": 6,
+      "timestamp": "2026-11-06T16:15:06.287Z",
+      "previousHash": "2149d5ca5ac36ea8fa1e4a17d97d36a31f5d78be626fbb416bcd3efbb9cdd4a3",
+      "type": "permission_change",
+      "actorId": "user-owner",
+      "actorName": "Maya Owner",
+      "documentId": "doc-1793981706227",
+      "detail": "Maya Owner set viewer1 to none access.",
+      "allowed": true,
+      "hash": "413521bf7d70fb29ff86fef850920d982eb1f6530cbd31777cc9337a1c7dbea0"
+    },
+    {
+      "id": "c8c911c0-7ee2-42c7-8e6f-47513eba67ce",
+      "sequence": 7,
+      "timestamp": "2026-11-06T16:15:06.297Z",
+      "previousHash": "413521bf7d70fb29ff86fef850920d982eb1f6530cbd31777cc9337a1c7dbea0",
+      "type": "access_denied",
+      "actorId": "user-viewer1",
+      "actorName": "Noah Viewer",
+      "documentId": "doc-1793981706227",
+      "detail": "Denied read access to document Board-Notes.txt.",
+      "allowed": false,
+      "hash": "1a113d43d6e980a4b823e9a042764a514e564dc0c266bb3921fa576feae37be3"
+    }
+  ]
+}
