@@ -64,10 +64,22 @@ async function apiRequest(path, options = {}, token) {
   });
 
   const hasJson = response.headers.get('content-type')?.includes('application/json');
-  const payload = hasJson ? await response.json() : null;
+  if (!hasJson) {
+    if (!response.ok) {
+      throw new Error('The API request failed. Check the Render backend URL and service logs.');
+    }
+
+    throw new Error('The API returned a non-JSON response. Set VITE_API_URL to your Render backend URL ending in /api, then redeploy the frontend.');
+  }
+
+  const payload = await response.json();
 
   if (!response.ok) {
     throw new Error(payload?.error || 'Request failed');
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    throw new Error('The API returned an invalid response. Check that VITE_API_URL points to the Render backend.');
   }
 
   return payload;
@@ -167,6 +179,10 @@ export default function App() {
         method: 'POST',
         body: JSON.stringify({ username, password }),
       });
+
+      if (typeof response.token !== 'string' || !response.user) {
+        throw new Error('The API login response is missing session details. Check that VITE_API_URL points to the Render backend.');
+      }
 
       setToken(response.token);
       setUser(response.user);
