@@ -2,6 +2,49 @@ import { useEffect, useMemo, useState } from 'react';
 
 const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+
+  for (let index = 0; index < bytes.length; index += 0x8000) {
+    const chunk = bytes.subarray(index, index + 0x8000);
+    binary += String.fromCharCode(...chunk);
+  }
+
+  return btoa(binary);
+}
+
+function base64ToUint8Array(base64) {
+  const normalized = base64.replace(/\s/g, '');
+  const binary = atob(normalized);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return bytes;
+}
+
+function isTextFile(file) {
+  const name = file.name || '';
+  const type = (file.type || '').toLowerCase();
+  const extension = name.includes('.') ? name.slice(name.lastIndexOf('.')).toLowerCase() : '';
+  const binaryExtensions = new Set([
+    '.doc', '.docx', '.pdf', '.xls', '.xlsx', '.ppt', '.pptx',
+    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp', '.zip', '.rar',
+    '.exe', '.dll', '.bin', '.iso', '.odt', '.ods', '.odp', '.heic',
+  ]);
+
+  if (binaryExtensions.has(extension)) {
+    return false;
+  }
+
+  return /^text\//.test(type)
+    || /\.(txt|csv|md|json|xml|html|htm|js|jsx|ts|tsx|css|svg|rtf|yaml|yml)$/i.test(name)
+    || /(json|xml|javascript|csv|css|html|svg|yaml|yml)/i.test(type);
+}
+
 async function apiRequest(path, options = {}, token) {
   const headers = {
     ...(options.headers || {}),
@@ -43,6 +86,9 @@ export default function App() {
     name: '',
     category: 'General',
     content: '',
+    contentType: 'text/plain',
+    contentEncoding: 'utf-8',
+    size: 0,
   });
   const [permissionForm, setPermissionForm] = useState({
     documentId: '',
@@ -148,12 +194,13 @@ export default function App() {
           name: uploadForm.name,
           category: uploadForm.category,
           content: uploadForm.content,
-          contentType: 'text/plain',
-          size: uploadForm.content.length,
+          contentType: uploadForm.contentType || 'text/plain',
+          contentEncoding: uploadForm.contentEncoding || 'utf-8',
+          size: uploadForm.size || uploadForm.content.length,
         }),
       }, token);
 
-      setUploadForm({ name: '', category: 'General', content: '' });
+      setUploadForm({ name: '', category: 'General', content: '', contentType: 'text/plain', contentEncoding: 'utf-8', size: 0 });
       await loadDocuments(token);
       setSelectedId(response.doc.id);
     } catch (err) {
@@ -164,7 +211,9 @@ export default function App() {
   const handleDownload = async (documentId) => {
     try {
       const response = await apiRequest(`/documents/${documentId}/download`, {}, token);
-      const blob = new Blob([response.content], { type: response.contentType || 'text/plain' });
+      const isBase64 = response.contentEncoding === 'base64';
+      const bytes = isBase64 ? base64ToUint8Array(response.content || '') : response.content || '';
+      const blob = new Blob([bytes], { type: response.contentType || 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
       anchor.href = url;
@@ -219,16 +268,45 @@ export default function App() {
   const handleFileRead = (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    if (isTextFile(file)) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setUploadForm((current) => ({
+          ...current,
+          name: file.name,
+          content: String(reader.result || ''),
+          contentType: file.type || 'text/plain',
+          contentEncoding: 'utf-8',
+          size: file.size,
+        }));
+      };
+      reader.readAsText(file);
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => {
+      const buffer = reader.result;
+      const content = buffer instanceof ArrayBuffer ? arrayBufferToBase64(buffer) : btoa(String(buffer || ''));
+
       setUploadForm((current) => ({
         ...current,
         name: file.name,
-        content: String(reader.result || ''),
+        content,
+        contentType: file.type || 'application/octet-stream',
+        contentEncoding: 'base64',
+        size: file.size,
       }));
     };
-    reader.readAsText(file);
+    reader.readAsArrayBuffer(file);
   };
+
+  const previewContent = selectedDocument && (
+    selectedDocument.contentType && !/^text\//.test(selectedDocument.contentType) && !/json|xml|javascript|csv/.test(selectedDocument.contentType)
+      ? 'Binary document — download it to view the original file.'
+      : selectedDocument.content || 'No content visible — document access is restricted.'
+  );
 
   if (!user || !token) {
     return (
@@ -362,7 +440,7 @@ export default function App() {
               <span>Category: {selectedDocument.category}</span>
               <span>Updated: {new Date(selectedDocument.updatedAt).toLocaleString()}</span>
             </div>
-            <pre>{selectedDocument.content || 'No content visible — document access is restricted.'}</pre>
+            <pre>{previewContent}</pre>
 
             <div className="permission-box">
               <h3>Document permissions</h3>

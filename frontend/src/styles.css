@@ -40,10 +40,9 @@ button.warning {
 .login-shell,
 .app-shell {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
+  display: block;
+  background: transparent;
+  padding: 0;
 }
 
 .login-card,
@@ -107,7 +106,7 @@ select {
   width: 100%;
   background: rgba(15, 23, 42, 0.96);
   border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-  padding: 1rem 2rem;
+  padding: 1rem clamp(1rem, 2vw, 2rem);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -122,12 +121,19 @@ select {
 .main-grid {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  padding: 2rem;
+  grid-template-columns: 260px minmax(360px, 1.3fr) minmax(260px, 0.8fr);
+  align-items: start;
+  padding: clamp(1rem, 2vw, 2rem);
+  max-width: 1500px;
+  margin: 0 auto;
 }
 
 .panel {
   padding: 1.5rem;
+  background: rgba(9, 17, 31, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 18px;
+  min-height: 680px;
 }
 
 .search-box {
@@ -145,7 +151,12 @@ select {
   border-radius: 12px;
   padding: 1rem;
   cursor: pointer;
-  transition: border 0.2s ease;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.doc-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(96, 165, 250, 0.5);
 }
 
 .doc-card.selected {
@@ -229,13 +240,33 @@ pre {
   border-radius: 10px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .main-grid {
     grid-template-columns: 1fr;
   }
 
+  .panel {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 600px) {
   .topbar {
     flex-direction: column;
     align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .topbar-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .main-grid {
+    padding: 1rem;
+  }
+
+  .panel {
+    padding: 1rem;
   }
 }

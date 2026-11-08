@@ -157,7 +157,8 @@ export function createApp() {
   });
 
   app.post('/api/documents', requireAuth, async (req, res) => {
-    const { name, category, content, contentType, size } = req.body || {};
+    const { name, category, content, contentType, size, contentEncoding } = req.body || {};
+    const resolvedEncoding = contentEncoding || (contentType && !/^text\//.test(String(contentType)) ? 'base64' : 'utf-8');
     const validation = isValidUpload({ name, content, size, contentType });
     if (!validation.valid) {
       return res.status(400).json({ error: validation.reason });
@@ -170,7 +171,8 @@ export function createApp() {
       category: String(category || 'General').trim(),
       ownerId: req.user.id,
       content: String(content),
-      contentType: contentType || 'text/plain',
+      contentType: String(contentType || 'text/plain'),
+      contentEncoding: resolvedEncoding,
       size: Number(size || String(content).length),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -221,12 +223,14 @@ export function createApp() {
       category: req.document.category,
       content: req.document.content,
       contentType: req.document.contentType,
+      contentEncoding: req.document.contentEncoding || 'utf-8',
       size: req.document.size,
     });
   });
 
   app.put('/api/documents/:documentId', requireAuth, requireDocumentEdit, async (req, res) => {
-    const { name, category, content, contentType, size } = req.body || {};
+    const { name, category, content, contentType, size, contentEncoding } = req.body || {};
+    const resolvedEncoding = contentEncoding || (contentType || req.document.contentType) && !/^text\//.test(String(contentType || req.document.contentType)) ? 'base64' : (req.document.contentEncoding || 'utf-8');
     const validation = isValidUpload({ name: name || req.document.name, content: content || req.document.content, size: size || req.document.size, contentType: contentType || req.document.contentType });
     if (!validation.valid) {
       return res.status(400).json({ error: validation.reason });
@@ -237,7 +241,8 @@ export function createApp() {
       name: String(name || req.document.name).trim(),
       category: String(category || req.document.category).trim(),
       content: String(content || req.document.content),
-      contentType: contentType || req.document.contentType,
+      contentType: String(contentType || req.document.contentType || 'text/plain'),
+      contentEncoding: resolvedEncoding,
       size: Number(size || req.document.size || String(content || req.document.content).length),
       updatedAt: new Date().toISOString(),
     };

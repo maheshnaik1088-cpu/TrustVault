@@ -235,6 +235,7 @@ export function sanitizeDocument(document, user) {
     updatedAt: document.updatedAt,
     size: document.size,
     contentType: document.contentType,
+    contentEncoding: document.contentEncoding || 'utf-8',
     permissions: document.permissions || [],
     content: canRead ? document.content : null,
     canEdit: Boolean(document.ownerId === user.id || user.role === 'admin' || (permission && permission.access === 'edit')),

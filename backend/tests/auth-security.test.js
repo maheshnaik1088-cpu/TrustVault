@@ -79,6 +79,44 @@ test('owner can grant access and viewer can access the document', async () => {
   });
 });
 
+test('binary uploads preserve their original bytes when downloaded', async () => {
+  await resetStore();
+  await withServer(async (port) => {
+    const ownerLogin = await login('owner1', 'Owner123!');
+    const original = Buffer.from([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x34, 0x0a, 0x25, 0x2d, 0x2d, 0x2d, 0x2d, 0x0a]);
+    const payload = {
+      name: 'sample.pdf',
+      category: 'Reports',
+      content: original.toString('base64'),
+      contentType: 'application/pdf',
+      contentEncoding: 'base64',
+      size: original.length,
+    };
+
+    const createRes = await fetch(`http://localhost:${port}/api/documents`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${ownerLogin.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    assert.equal(createRes.status, 201);
+    const created = await createRes.json();
+    assert.equal(created.doc.contentEncoding, 'base64');
+
+    const downloadRes = await fetch(`http://localhost:${port}/api/documents/${created.doc.id}/download`, {
+      headers: { Authorization: `Bearer ${ownerLogin.token}` },
+    });
+
+    const downloaded = await downloadRes.json();
+    assert.equal(downloadRes.status, 200);
+    assert.equal(downloaded.contentEncoding, 'base64');
+    assert.equal(downloaded.content, payload.content);
+  });
+});
+
 test('viewer without permission cannot access another user document', async () => {
   await resetStore();
   await withServer(async (port) => {
