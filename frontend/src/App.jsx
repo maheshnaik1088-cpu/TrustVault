@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+const API_BASE = import.meta.env.VITE_API_URL
+  || (import.meta.env.PROD ? 'https://trustvault-backend-vcsh.onrender.com/api' : '/api');
 
 function arrayBufferToBase64(buffer) {
   const bytes = new Uint8Array(buffer);

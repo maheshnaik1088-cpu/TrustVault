@@ -39,8 +39,8 @@ Deploy the backend and frontend as separate Render services:
 
 1. Create a **Web Service** for the `backend` directory. Use `npm install` as the build command and `npm start` as the start command. Add a `JWT_SECRET` environment variable containing a long random secret; Render supplies `PORT`.
 2. Create a **Static Site** for the `frontend` directory. Use `npm install && npm run build` as the build command and `dist` as the publish directory.
-3. In the frontend Static Site's **Environment** settings, set `VITE_API_URL` to the backend's public URL followed by `/api`, for example `https://your-backend.onrender.com/api`.
-4. Save the environment variable and trigger a new frontend deploy. `VITE_API_URL` is embedded during the build; `.env.example` is only a template and is not loaded by Render automatically.
+3. If your backend has a different URL from the configured production default (`https://trustvault-backend-vcsh.onrender.com/api`), set `VITE_API_URL` in the frontend Static Site's **Environment** settings to the backend's public URL followed by `/api`.
+4. Save the environment variable if you changed it, then trigger a new frontend deploy. `VITE_API_URL` is embedded during the build; `.env.example` is only a template and is not loaded by Render automatically.
 5. Check `https://your-backend.onrender.com/health` returns JSON with `"ok": true`, then sign in again.
 
 If login reports that the API returned a non-JSON response, the frontend is reaching a page instead of the API. Correct `VITE_API_URL` and redeploy the frontend. The backend login endpoint is `/api/login`; do not omit `/api` from the configured base URL.
